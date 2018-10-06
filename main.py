@@ -46,7 +46,7 @@ def get_filtered_freq_list(corpus, word_length, nonexistent_letters, existent_le
 
     # Sort the resulting frequency mapping and convert to a string in the order of frequency
     sorted_by_value = sorted(letter_to_frequency.items(), key=lambda kv: kv[1], reverse=True)
-    letters = ''.join([letter for letter,frequency in sorted_by_value if frequency != 0])
+    letters = ''.join([letter for letter, frequency in sorted_by_value if frequency != 0])
 
     if len(letters) == 0:
         regular = get_filtered_freq_list(corpus, 10000, [], [], [])
@@ -67,6 +67,7 @@ def get_token(hangman_web_service):
 def send_guess(hangman_web_service, token, guess):
     """Call the hangman web service with a game token and a guess letter
 
+    :param hangman_web_service: string of URL
     :param token: string id of a game
     :param guess: string of a letter to be guessed
     :return: dict of response
@@ -112,6 +113,8 @@ def play_game(game_start, corpus, hangman_web_service, flags):
 
         # Guess the word with maximum length first
         max_word_length = 0
+        guess_word = state_details[0]
+        guess_idx = 0
         for idx, word in enumerate(state_details):
             if word["remaining"] > 0 and word["length"] >= max_word_length:
                 guess_idx = idx
@@ -147,7 +150,7 @@ def play_game(game_start, corpus, hangman_web_service, flags):
         game_start['state'] = make_guess['state']
 
     if "-v" == flags:
-        print("The prisoner is: ", make['status'])
+        print("The prisoner is: ", make_guess['status'])
 
     return [make_guess['status'], game_start['state']]
 
@@ -178,8 +181,8 @@ def main():
     while True:
         game_start = get_token(hangman_web_service)
         status, state = play_game(game_start, corpus, hangman_web_service, flags)
-        #if "-v" == flags:
-        print("{} - {}\n\n".format(status, state))
+        if "-v" == flags:
+            print("{} - {}\n\n".format(status, state))
 
 
 if __name__ == "__main__":
